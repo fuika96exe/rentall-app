@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail View</title>
+    <style>
+        body {
+            background-color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 375px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .image-container {
+            width: 100%;
+            height: 300px;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+        .image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .info {
+            margin-top: 20px;
+        }
+        .info div {
+            margin-bottom: 10px;
+        }
+        .navigation {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .navigation button {
+            font-size: 18px;
+            padding: 10px 20px;
+        }
+        .description {
+            margin-top: 20px;
+        }
+        .description h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="image-container">
+            <img id="current-image" class="image" src="" alt="Property Image">
+        </div>
+
+        <div class="info">
+            <div id="price"></div>
+            <div id="area"></div>
+            <div id="furnish"></div>
+            <div id="bedroom"></div>
+            <div id="bathroom"></div>
+        </div>
+
+        <div class="navigation">
+            <button onclick="prevImage()">Previous</button>
+            <button onclick="nextImage()">Next</button>
+        </div>
+
+        <div class="description">
+            <h2>Description</h2>
+            <p id="description">Loading description...</p>
+        </div>
+    </div>
+
+    <script>
+        const images = [];
+        let currentIndex = 0;
+
+        function getQueryParams() {
+            const queryParams = new URLSearchParams(window.location.search);
+            return {
+                area: queryParams.get('area'),
+                price: queryParams.get('price'),
+                bedroom: queryParams.get('bedroom'),
+                bathroom: queryParams.get('bathroom'),
+                furnish: queryParams.get('furnish'),
+                images: queryParams.get('images') ? queryParams.get('images').split(',') : [],
+                description: queryParams.get('description') || "No description available."
+            };
+        }
+
+        function displayDetails() {
+            const { area, price, bedroom, bathroom, furnish, images, description } = getQueryParams();
+            document.getElementById('current-image').src = `images/${images[0]}`;
+            document.getElementById('price').textContent = `Price: ${price}`;
+            document.getElementById('area').textContent = `Area: ${area}`;
+            document.getElementById('furnish').textContent = `Furnish: ${furnish}`;
+            document.getElementById('bedroom').textContent = `Bedroom: ${bedroom}`;
+            document.getElementById('bathroom').textContent = `Bathroom: ${bathroom}`;
+            document.getElementById('description').textContent = description;
+
+            // Save images for navigation
+            window.images = images;
+        }
+
+        function showImage(index) {
+            if (window.images.length > 0) {
+                const imagePath = `images/${window.images[index]}`;
+                document.getElementById('current-image').src = imagePath;
+            }
+        }
+
+        function prevImage() {
+            currentIndex = (currentIndex - 1 + window.images.length) % window.images.length;
+            showImage(currentIndex);
+        }
+
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % window.images.length;
+            showImage(currentIndex);
+        }
+
+        displayDetails();
+    </script>
+</body>
+</html>

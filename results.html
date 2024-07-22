@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            background-color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 375px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .result-column {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            width: 100%;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .result-column .price {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .result-column .info {
+            margin-top: 10px;
+        }
+        .result-column .info div {
+            margin-bottom: 5px;
+        }
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Results</h1>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        // Data example (for demo purposes, this should be replaced with real data)
+        const data = [
+            {"area": "Batu Kawa", "price": 800, "bedroom": "1", "bathroom": "1", "furnish": "furnished", "images": ["1.jpg", "2.jpg", "3.jpg"], "description": "The greatest home of Batu Kawa, you must rent it"},
+            {"area": "Taman Hui Sing", "price": 1200, "bedroom": "2", "bathroom": "2", "furnish": "none", "images": [], "description": "Great location, close to amenities."},
+            {"area": "BDC", "price": 1850, "bedroom": "3", "bathroom": "3", "furnish": "partially furnished", "images": [], "description": "Spacious and comfortable living space."}
+        ];
+
+        function priceInRange(price, range) {
+            if (range === "501-1000") return price >= 501 && price <= 1000;
+            if (range === "1001-1500") return price >= 1001 && price <= 1500;
+            if (range === "1501-2000") return price >= 1501 && price <= 2000;
+            if (range === "2001-2500") return price >= 2001 && price <= 2500;
+            if (range === "2501-3000") return price >= 2501 && price <= 3000;
+            if (range === "3000+") return price >= 3000;
+            return false;
+        }
+
+        function getQueryParams() {
+            const queryParams = new URLSearchParams(window.location.search);
+            return {
+                area: queryParams.get('area'),
+                prices: queryParams.get('prices') ? queryParams.get('prices').split(',') : [],
+                bedrooms: queryParams.get('bedrooms') ? queryParams.get('bedrooms').split(',') : [],
+                bathrooms: queryParams.get('bathrooms') ? queryParams.get('bathrooms').split(',') : [],
+                furnishes: queryParams.get('furnishes') ? queryParams.get('furnishes').split(',') : []
+            };
+        }
+
+        function displayResults() {
+            const { area, prices, bedrooms, bathrooms, furnishes } = getQueryParams();
+
+            const results = data.filter(item => {
+                return (area === "" || item.area === area) &&
+                    (prices.length === 0 || prices.some(range => priceInRange(item.price, range))) &&
+                    (bedrooms.length === 0 || bedrooms.includes("any") || bedrooms.includes(item.bedroom)) &&
+                    (bathrooms.length === 0 || bathrooms.includes("any") || bathrooms.includes(item.bathroom)) &&
+                    (furnishes.length === 0 || furnishes.includes(item.furnish));
+            });
+
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            results.forEach(result => {
+                const resultColumn = document.createElement('div');
+                resultColumn.className = 'result-column';
+                resultColumn.onclick = () => {
+                    const url = `detail.html?area=${encodeURIComponent(result.area)}&price=${encodeURIComponent(result.price)}&bedroom=${encodeURIComponent(result.bedroom)}&bathroom=${encodeURIComponent(result.bathroom)}&furnish=${encodeURIComponent(result.furnish)}&images=${encodeURIComponent(result.images.join(','))}&description=${encodeURIComponent(result.description)}`;
+                    window.location.href = url;
+                };
+                resultColumn.innerHTML = `
+                    <div class="price">${result.price}</div>
+                    <div class="info">
+                        <div>Area: ${result.area}</div>
+                        <div>Furnish: ${result.furnish}</div>
+                        <div>Bedroom: ${result.bedroom}, Bathroom: ${result.bathroom}</div>
+                    </div>
+                `;
+                resultsDiv.appendChild(resultColumn);
+            });
+        }
+
+        displayResults();
+    </script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPhone 11 App Mockup</title>
+    <style>
+        body {
+            background-color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 375px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .top-frame {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            width: 50px;
+            height: 50px;
+            background-color: blue;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .app-name {
+            font-size: 24px;
+        }
+        .frame {
+            margin-bottom: 20px;
+        }
+        .label {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .options input {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-frame">
+            <div class="logo"></div>
+            <div class="app-name">App Name</div>
+        </div>
+
+        <div class="frame">
+            <div class="label">Area</div>
+            <select id="area">
+                <option value="">Select Area</option>
+                <option value="Batu Kawa">Batu Kawa</option>
+                <option value="Taman Hui Sing">Taman Hui Sing</option>
+                <option value="BDC">BDC</option>
+            </select>
+        </div>
+
+        <div class="frame">
+            <div class="label">Price</div>
+            <div class="options">
+                <label><input type="checkbox" name="price" value="501-1000"> 501-1000</label>
+                <label><input type="checkbox" name="price" value="1001-1500"> 1001-1500</label>
+                <label><input type="checkbox" name="price" value="1501-2000"> 1501-2000</label>
+                <label><input type="checkbox" name="price" value="2001-2500"> 2001-2500</label>
+                <label><input type="checkbox" name="price" value="2501-3000"> 2501-3000</label>
+                <label><input type="checkbox" name="price" value="3000+"> 3000+</label>
+            </div>
+        </div>
+
+        <div class="frame">
+            <div class="label">Bedroom</div>
+            <div class="options">
+                <label><input type="checkbox" name="bedroom" value="any"> any</label>
+                <label><input type="checkbox" name="bedroom" value="1"> 1</label>
+                <label><input type="checkbox" name="bedroom" value="2"> 2</label>
+                <label><input type="checkbox" name="bedroom" value="3"> 3</label>
+            </div>
+        </div>
+
+        <div class="frame">
+            <div class="label">Bathroom</div>
+            <div class="options">
+                <label><input type="checkbox" name="bathroom" value="any"> any</label>
+                <label><input type="checkbox" name="bathroom" value="1"> 1</label>
+                <label><input type="checkbox" name="bathroom" value="2"> 2</label>
+                <label><input type="checkbox" name="bathroom" value="3"> 3</label>
+            </div>
+        </div>
+
+        <div class="frame">
+            <div class="label">Furnish</div>
+            <div class="options">
+                <label><input type="checkbox" name="furnish" value="furnished"> furnished</label>
+                <label><input type="checkbox" name="furnish" value="partially furnished"> partially furnished</label>
+                <label><input type="checkbox" name="furnish" value="none"> none</label>
+            </div>
+        </div>
+
+        <button onclick="search()" style="font-size: 18px; padding: 10px 20px;">Search</button>
+    </div>
+
+    <script>
+        function getCheckedValues(name) {
+            const checkboxes = document.querySelectorAll(`input[name="${name}"]:checked`);
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function search() {
+            const area = document.getElementById('area').value;
+            const prices = getCheckedValues('price');
+            const bedrooms = getCheckedValues('bedroom');
+            const bathrooms = getCheckedValues('bathroom');
+            const furnishes = getCheckedValues('furnish');
+
+            const queryParams = new URLSearchParams({
+                area,
+                prices: prices.join(','),
+                bedrooms: bedrooms.join(','),
+                bathrooms: bathrooms.join(','),
+                furnishes: furnishes.join(',')
+            }).toString();
+
+            window.location.href = `results.html?${queryParams}`;
+        }
+    </script>
+</body>
+</html>
