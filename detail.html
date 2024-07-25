@@ -29,19 +29,19 @@
             height: 100%;
             object-fit: cover;
         }
+        .navigation {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .navigation button {
+            font-size: 18px;
+            padding: 10px 20px;
+        }
         .info {
             margin-top: 20px;
         }
         .info div {
             margin-bottom: 10px;
-        }
-        .navigation {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .navigation button {
-            font-size: 18px;
-            padding: 10px 20px;
         }
         .description {
             margin-top: 20px;
@@ -57,17 +57,17 @@
             <img id="current-image" class="image" src="" alt="Property Image">
         </div>
 
+        <div class="navigation">
+            <button onclick="prevImage()">Previous</button>
+            <button onclick="nextImage()">Next</button>
+        </div>
+
         <div class="info">
             <div id="price"></div>
             <div id="area"></div>
             <div id="furnish"></div>
             <div id="bedroom"></div>
             <div id="bathroom"></div>
-        </div>
-
-        <div class="navigation">
-            <button onclick="prevImage()">Previous</button>
-            <button onclick="nextImage()">Next</button>
         </div>
 
         <div class="description">
@@ -101,7 +101,7 @@
             document.getElementById('furnish').textContent = `Furnish: ${furnish}`;
             document.getElementById('bedroom').textContent = `Bedroom: ${bedroom}`;
             document.getElementById('bathroom').textContent = `Bathroom: ${bathroom}`;
-            document.getElementById('description').textContent = description;
+            document.getElementById('description').innerHTML = description.replace(/\n/g, '<br><br>');
 
             // Save images for navigation
             window.images = images;
