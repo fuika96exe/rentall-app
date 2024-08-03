@@ -19,29 +19,47 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         .result-column {
-            background-color: #f9f9f9;
-            padding: 10px;
-            border: 1px solid #ddd;
-            width: 100%;
+            display: flex;
             margin-bottom: 10px;
-            cursor: pointer;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
         }
-        .result-column .price {
+        .result-column img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        .checkbox-wrapper {
+            width: 10%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        .checkbox-wrapper input[type="checkbox"] {
+            transform: scale(1.5); /* Increase checkbox size */
+        }
+        .info-wrapper {
+            width: 90%;
+            padding: 10px;
+        }
+        .info-wrapper .price {
             font-size: 24px;
             font-weight: bold;
         }
-        .result-column .info {
-            margin-top: 10px;
-        }
-        .result-column .info div {
-            margin-bottom: 5px;
-        }
-        .results {
+        .button-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            max-height: 500px;
-            overflow-y: auto;
+            justify-content: space-between; /* Align buttons to both sides */
+            margin-top: 20px;
+        }
+        .share-button, .select-all-button {
+            font-size: 18px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .select-all-button {
+            font-size: 16px;
+            padding: 5px 10px;
         }
     </style>
 </head>
@@ -49,6 +67,10 @@
     <div class="container">
         <h1>Search Results</h1>
         <div class="results" id="results"></div>
+        <div class="button-container">
+            <button class="select-all-button" onclick="selectAll()">Select All</button>
+            <button class="share-button" onclick="shareResults()">Share</button>
+        </div>
     </div>
 
     <script>
@@ -360,41 +382,63 @@
                 area: queryParams.get('area'),
                 prices: queryParams.get('prices') ? queryParams.get('prices').split(',') : [],
                 bedrooms: queryParams.get('bedrooms') ? queryParams.get('bedrooms').split(',') : [],
-                bathrooms: queryParams.get('bathrooms') ? queryParams.get('bathrooms').split(',') : [],
                 furnishes: queryParams.get('furnishes') ? queryParams.get('furnishes').split(',') : []
             };
         }
 
         function displayResults() {
-            const { area, prices, bedrooms, bathrooms, furnishes } = getQueryParams();
+            const { area, prices, bedrooms, furnishes } = getQueryParams();
 
             const results = data.filter(item => {
                 return (area === "" || item.area === area) &&
                     (prices.length === 0 || prices.some(range => priceInRange(item.price, range))) &&
                     (bedrooms.length === 0 || bedrooms.includes("any") || bedrooms.includes(item.bedroom)) &&
-                    (bathrooms.length === 0 || bathrooms.includes("any") || bathrooms.includes(item.bathroom)) &&
                     (furnishes.length === 0 || furnishes.includes("any") || furnishes.includes(item.furnish));
             });
 
+            // Sort results by price in descending order
+            results.sort((a, b) => b.price - a.price);
+
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
-            results.forEach(result => {
+            results.forEach((result, index) => {
                 const resultColumn = document.createElement('div');
                 resultColumn.className = 'result-column';
-                resultColumn.onclick = () => {
-                    const url = `detail.html?area=${encodeURIComponent(result.area)}&price=${encodeURIComponent(result.price)}&bedroom=${encodeURIComponent(result.bedroom)}&bathroom=${encodeURIComponent(result.bathroom)}&furnish=${encodeURIComponent(result.furnish)}&images=${encodeURIComponent(result.images.join(','))}&description=${encodeURIComponent(result.description.replace(/\n/g, '<br><br>'))}`;
-                    window.location.href = url;
-                };
+
                 resultColumn.innerHTML = `
-                    <div class="price">${result.price}</div>
-                    <div class="info">
-                        <div>Area: ${result.area}</div>
-                        <div>Furnish: ${result.furnish}</div>
-                        <div>Bedroom: ${result.bedroom}, Bathroom: ${result.bathroom}</div>
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="result-${index}">
+                    </div>
+                    <div class="info-wrapper">
+                        <img src="images/${result.images[0]}" alt="Thumbnail">
+                        <div class="info">
+                            <div class="price">${result.price}</div>
+                            <div>Area: ${result.area}</div>
+                            <div>Furnish: ${result.furnish}</div>
+                            <div>Bedroom: ${result.bedroom}</div>
+                            <div>Bathroom: ${result.bathroom}</div>
+                        </div>
                     </div>
                 `;
+                resultColumn.onclick = (event) => {
+                    if (event.target.tagName.toLowerCase() !== 'input') {  // Only navigate if not clicking on the checkbox
+                        const url = `detail.html?area=${encodeURIComponent(result.area)}&price=${encodeURIComponent(result.price)}&bedroom=${encodeURIComponent(result.bedroom)}&bathroom=${encodeURIComponent(result.bathroom)}&furnish=${encodeURIComponent(result.furnish)}&images=${encodeURIComponent(result.images.join(','))}&description=${encodeURIComponent(result.description.replace(/\n/g, '<br><br>'))}`;
+                        window.location.href = url;
+                    }
+                };
                 resultsDiv.appendChild(resultColumn);
             });
+        }
+
+        function shareResults() {
+            const queryParams = new URLSearchParams(getQueryParams()).toString();
+            const shareLink = `${window.location.origin}/results.html?${queryParams}`;
+            prompt("Share this link:", shareLink);
+        }
+
+        function selectAll() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = true);
         }
 
         displayResults();
