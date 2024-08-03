@@ -95,16 +95,7 @@
                 <label><input type="checkbox" name="bedroom" value="1"> 1</label>
                 <label><input type="checkbox" name="bedroom" value="2"> 2</label>
                 <label><input type="checkbox" name="bedroom" value="3"> 3</label>
-            </div>
-        </div>
-
-        <div class="frame">
-            <div class="label">Bathroom</div>
-            <div class="options">
-                <label><input type="checkbox" name="bathroom" value="any"> any</label>
-                <label><input type="checkbox" name="bathroom" value="1"> 1</label>
-                <label><input type="checkbox" name="bathroom" value="2"> 2</label>
-                <label><input type="checkbox" name="bathroom" value="3"> 3</label>
+				<label><input type="checkbox" name="bedroom" value="4+"> 4+</label>
             </div>
         </div>
 
@@ -130,14 +121,12 @@
             const area = document.getElementById('area').value;
             const prices = getCheckedValues('price');
             const bedrooms = getCheckedValues('bedroom');
-            const bathrooms = getCheckedValues('bathroom');
             const furnishes = getCheckedValues('furnish');
 
             const queryParams = new URLSearchParams({
                 area,
                 prices: prices.join(','),
                 bedrooms: bedrooms.join(','),
-                bathrooms: bathrooms.join(','),
                 furnishes: furnishes.join(',')
             }).toString();
 
